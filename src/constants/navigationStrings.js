@@ -3,4 +3,5 @@ export default {
   HomeTab: 'HomeTab',
   CreditTab: 'CreditTab',
   DebitTab: 'DebitTab',
+  AddDetails: 'AddDetails',
 };
