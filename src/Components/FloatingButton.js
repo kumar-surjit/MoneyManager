@@ -17,10 +17,11 @@ export default class FloatingButton extends Component {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 30,
-    backgroundColor: '#FFDA44',
+    backgroundColor: '#FF652F',
     position: 'absolute',
     bottom: 20,
     right: 20,
     padding: 8,
+    elevation: 10,
   },
 });

@@ -16,7 +16,7 @@ export default class InputText extends Component {
     this.setState({bottomBorderColor: colors.themeGray, bottomBorderWidth: 1});
   };
   render() {
-    const {placeholder, customStyle} = this.props;
+    const {placeholder, customStyle, keyboard} = this.props;
     const {bottomBorderColor, bottomBorderWidth} = this.state;
     return (
       <TextInput
@@ -30,6 +30,8 @@ export default class InputText extends Component {
         ]}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
+        keyboardType={keyboard}
+        onChangeText={val => this.props.onChange(val)}
       />
     );
   }

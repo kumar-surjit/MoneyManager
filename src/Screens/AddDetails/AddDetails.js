@@ -1,24 +1,65 @@
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Image,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import InputText from '../../Components/InputText';
 import imagePath from '../../constants/imagePath';
 import colors from '../../styles/colors';
 import DropDownPicker from 'react-native-dropdown-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import actions from '../../redux/actions';
+import {showMessage} from 'react-native-flash-message';
+import {getDate} from '../../utils/helperFunctions';
 
 export default class AddDetails extends Component {
   state = {
-    category: 'Credit',
+    category: this.props.route.params.type,
+    date: new Date(),
+    show: false,
+    descriptionText: '',
+    amountText: '',
   };
+
+  showMode = () => {
+    this.setState({show: true});
+  };
+
+  onChange = (event, selectedDate) => {
+    const {date} = this.state;
+    console.log(selectedDate);
+    const currentDate = selectedDate || date;
+    this.setState({date: currentDate, show: false});
+    console.log(currentDate);
+  };
+
+  saveClicked = () => {
+    const {category, descriptionText, amountText, date} = this.state;
+    let data = {
+      category,
+      description: descriptionText,
+      amount: amountText,
+      date: date.toString(),
+    };
+    if (descriptionText !== '' && amountText !== '') {
+      actions.add(data);
+      showMessage({
+        message: 'Successfully Added',
+        description: 'Entry has been added successfully.',
+        type: 'success',
+      });
+      this.props.navigation.goBack();
+      // console.log(data);
+    } else {
+      showMessage({
+        message: 'Empty Fields',
+        description: 'Please fill the required fields',
+        type: 'danger',
+      });
+    }
+  };
+
   render() {
-    const {category} = this.state;
+    const {category, date, show} = this.state;
+    // console.log(date);
     return (
       <View style={{flex: 1}}>
         <View style={styles.appBarContainer}>
@@ -34,7 +75,7 @@ export default class AddDetails extends Component {
               Add Details
             </Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={this.saveClicked}>
             <Text style={{color: '#fff', fontSize: 18}}>SAVE</Text>
           </TouchableOpacity>
         </View>
@@ -48,7 +89,9 @@ export default class AddDetails extends Component {
           </View>
           <InputText
             placeholder="Enter a description"
+            keyboard="default"
             customStyle={styles.inputTextDescStyle}
+            onChange={value => this.setState({descriptionText: value})}
           />
         </View>
         <View style={styles.amountContainer}>
@@ -57,37 +100,59 @@ export default class AddDetails extends Component {
           </View>
           <InputText
             placeholder="0.00"
+            keyboard="numeric"
             customStyle={styles.inputTextAmountStyle}
+            onChange={value => this.setState({amountText: value})}
           />
         </View>
-        <DropDownPicker
-          items={[
-            {
-              label: 'Credit',
-              value: 'Credit',
-            },
-            {
-              label: 'Debit',
-              value: 'Debit',
-            },
-          ]}
-          placeholder="Please select a category"
-          defaultValue={category}
-          containerStyle={{
-            height: 40,
-            marginTop: 40,
-            alignSelf: 'center',
-            width: '40%',
-          }}
-          style={{
-            backgroundColor: '#fafafa',
-            elevation: 5,
-          }}
-          itemStyle={{}}
-          dropDownStyle={{backgroundColor: '#fafafa'}}
-          onChangeItem={item => this.setState({category: item.value})}
-          labelStyle={{fontSize: 20}}
-        />
+        <View style={styles.dateViewContainer}>
+          <TouchableOpacity style={styles.dateStyle} onPress={this.showMode}>
+            <Image
+              source={imagePath.ic_calendar}
+              style={{width: 25, height: 25, marginRight: 8}}
+              tintColor={colors.themeGreen}
+            />
+            <Text style={{fontSize: 16, alignSelf: 'center'}}>
+              {getDate(date)}
+            </Text>
+          </TouchableOpacity>
+          <DropDownPicker
+            items={[
+              {
+                label: 'Credit',
+                value: 'Credit',
+              },
+              {
+                label: 'Debit',
+                value: 'Debit',
+              },
+            ]}
+            placeholder="Please select a category"
+            defaultValue={category}
+            containerStyle={{
+              height: 40,
+              flex: 0.4,
+              marginHorizontal: 30,
+            }}
+            style={{
+              backgroundColor: '#fafafa',
+              elevation: 5,
+            }}
+            itemStyle={{}}
+            dropDownStyle={{backgroundColor: '#fafafa'}}
+            onChangeItem={item => this.setState({category: item.value})}
+            labelStyle={{fontSize: 20}}
+          />
+        </View>
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode="date"
+            display="default"
+            onChange={this.onChange}
+          />
+        )}
       </View>
     );
   }
@@ -132,5 +197,20 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     marginTop: 8,
+  },
+  dateViewContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 50,
+    justifyContent: 'space-evenly',
+  },
+  dateStyle: {
+    flex: 0.4,
+    elevation: 5,
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 4,
+    flexDirection: 'row',
   },
 });

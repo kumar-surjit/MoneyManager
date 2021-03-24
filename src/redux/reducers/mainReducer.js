@@ -1,16 +1,20 @@
 import actionTypes from '../actionTypes';
 
 const initialState = {
-  counter: 0,
+  list: [],
 };
+
+let id = 0;
 
 export default function (state = initialState, action) {
   switch (action.type) {
     case actionTypes.ADD: {
-      const {value} = action.payload;
+      const {data} = action.payload;
+      console.log(data);
+      data.id = id++;
       return {
         ...state,
-        counter: state.counter + value,
+        list: [...state.list, data],
       };
     }
     default:

@@ -3,11 +3,11 @@ import types from '../actionTypes';
 
 const {dispatch} = store;
 
-export function add() {
+export function add(data) {
   dispatch({
     type: types.ADD,
     payload: {
-      value: 1,
+      data,
     },
   });
 }
