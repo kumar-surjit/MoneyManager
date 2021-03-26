@@ -5,13 +5,14 @@ import navigationStrings from '../../constants/navigationStrings';
 import {HomeTab, CreditTab, DebitTab} from '../index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import imagePath from '../../constants/imagePath';
+import colors from '../../styles/colors';
 
 const Tab = createBottomTabNavigator();
 
 export default class Home extends Component {
   render() {
     return (
-      <Tab.Navigator>
+      <Tab.Navigator tabBarOptions={{activeTintColor: colors.themeGreen}}>
         <Tab.Screen
           name={navigationStrings.HomeTab}
           component={HomeTab}

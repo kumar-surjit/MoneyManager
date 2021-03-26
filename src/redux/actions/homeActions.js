@@ -11,3 +11,19 @@ export function add(data) {
     },
   });
 }
+
+export function updateItem(item) {
+  dispatch({
+    type: types.UPDATE_ITEM,
+    payload: {
+      item,
+    },
+  });
+}
+
+export function deleteItem(id) {
+  dispatch({
+    type: types.DELETE_ITEM,
+    payload: {id},
+  });
+}

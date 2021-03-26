@@ -8,15 +8,23 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import actions from '../../redux/actions';
 import {showMessage} from 'react-native-flash-message';
-import {getDate} from '../../utils/helperFunctions';
+import {getDate, regexTest} from '../../utils/helperFunctions';
+import styles from './styles';
+import strings from '../../constants/lang';
 
 export default class AddDetails extends Component {
   state = {
     category: this.props.route.params.type,
-    date: new Date(),
+    date: this.props.route.params.item
+      ? new Date(this.props.route.params.item.date)
+      : new Date(),
     show: false,
-    descriptionText: '',
-    amountText: '',
+    descriptionText: this.props.route.params.item
+      ? this.props.route.params.item.description
+      : '',
+    amountText: this.props.route.params.item
+      ? this.props.route.params.item.amount
+      : '',
   };
 
   showMode = () => {
@@ -39,26 +47,49 @@ export default class AddDetails extends Component {
       amount: amountText,
       date: date.toString(),
     };
+    let message = '',
+      desc = '',
+      type = '';
     if (descriptionText !== '' && amountText !== '') {
-      actions.add(data);
-      showMessage({
-        message: 'Successfully Added',
-        description: 'Entry has been added successfully.',
-        type: 'success',
-      });
+      let amountPattern = /^\d+(\.*\d+)*$/;
+      if (!regexTest(amountText, amountPattern)) {
+        showMessage({
+          message: 'Invalid Amount',
+          description: 'Please fill a valid amount',
+          type: 'danger',
+        });
+        return;
+      }
+      type = 'success';
+      if (this.props.route.params.item) {
+        data.id = this.props.route.params.item.id;
+        console.log('TRUE', data);
+        actions.updateItem(data);
+        message = 'Successfully Updated';
+        desc = 'Entry has been updated successfully.';
+      } else {
+        actions.add(data);
+        message = 'Successfully Added';
+        desc = 'Entry has been added successfully.';
+        console.log('FALSE');
+      }
       this.props.navigation.goBack();
       // console.log(data);
     } else {
-      showMessage({
-        message: 'Empty Fields',
-        description: 'Please fill the required fields',
-        type: 'danger',
-      });
+      (message = 'Empty Fields'),
+        (desc = 'Please fill the required fields'),
+        (type = 'danger');
     }
+    showMessage({
+      message: message,
+      description: desc,
+      type: type,
+    });
   };
 
   render() {
-    const {category, date, show} = this.state;
+    console.log('PROPS: ', this.props);
+    const {category, date, show, descriptionText, amountText} = this.state;
     // console.log(date);
     return (
       <View style={{flex: 1}}>
@@ -67,16 +98,18 @@ export default class AddDetails extends Component {
             <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
               <MaterialCommunityIcons
                 name="arrow-left"
-                color="#fff"
+                color={colors.white}
                 size={30}
               />
             </TouchableOpacity>
-            <Text style={{color: '#fff', fontSize: 20, marginLeft: 16}}>
-              Add Details
+            <Text style={{color: colors.white, fontSize: 20, marginLeft: 16}}>
+              {strings.ADD_DETAILS}
             </Text>
           </View>
           <TouchableOpacity onPress={this.saveClicked}>
-            <Text style={{color: '#fff', fontSize: 18}}>SAVE</Text>
+            <Text style={{color: colors.white, fontSize: 18}}>
+              {strings.SAVE}
+            </Text>
           </TouchableOpacity>
         </View>
         <View
@@ -88,8 +121,9 @@ export default class AddDetails extends Component {
             />
           </View>
           <InputText
-            placeholder="Enter a description"
+            placeholder={strings.ENTER_DESCRIPTION}
             keyboard="default"
+            value={descriptionText}
             customStyle={styles.inputTextDescStyle}
             onChange={value => this.setState({descriptionText: value})}
           />
@@ -99,8 +133,9 @@ export default class AddDetails extends Component {
             <Image source={imagePath.ic_rupee} style={styles.inputIconStyle} />
           </View>
           <InputText
-            placeholder="0.00"
+            placeholder={strings.AMOUNT_PLACEHOLDER}
             keyboard="numeric"
+            value={amountText}
             customStyle={styles.inputTextAmountStyle}
             onChange={value => this.setState({amountText: value})}
           />
@@ -119,15 +154,15 @@ export default class AddDetails extends Component {
           <DropDownPicker
             items={[
               {
-                label: 'Credit',
-                value: 'Credit',
+                label: strings.CREDIT,
+                value: strings.CREDIT,
               },
               {
-                label: 'Debit',
-                value: 'Debit',
+                label: strings.DEBIT,
+                value: strings.DEBIT,
               },
             ]}
-            placeholder="Please select a category"
+            placeholder={strings.SELECT_CATEGORY}
             defaultValue={category}
             containerStyle={{
               height: 40,
@@ -135,11 +170,11 @@ export default class AddDetails extends Component {
               marginHorizontal: 30,
             }}
             style={{
-              backgroundColor: '#fafafa',
+              backgroundColor: colors.dropdownWhite,
               elevation: 5,
             }}
             itemStyle={{}}
-            dropDownStyle={{backgroundColor: '#fafafa'}}
+            dropDownStyle={{backgroundColor: colors.dropdownWhite}}
             onChangeItem={item => this.setState({category: item.value})}
             labelStyle={{fontSize: 20}}
           />
@@ -157,60 +192,3 @@ export default class AddDetails extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  appBarContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.themeGreen,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    justifyContent: 'space-between',
-  },
-  imageContainer: {
-    elevation: 5,
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  inputIconStyle: {
-    width: 28,
-    height: 20,
-    alignSelf: 'center',
-    resizeMode: 'contain',
-  },
-  inputTextDescStyle: {
-    borderBottomWidth: 1,
-    flex: 1,
-    fontSize: 20,
-  },
-  amountContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 32,
-    marginTop: 8,
-    alignItems: 'flex-end',
-  },
-  inputTextAmountStyle: {
-    borderBottomWidth: 1,
-    flex: 1,
-    fontSize: 25,
-    fontWeight: 'bold',
-    marginTop: 8,
-  },
-  dateViewContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 50,
-    justifyContent: 'space-evenly',
-  },
-  dateStyle: {
-    flex: 0.4,
-    elevation: 5,
-    backgroundColor: '#fff',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    borderRadius: 4,
-    flexDirection: 'row',
-  },
-});

@@ -5,13 +5,15 @@ import navigationStrings from '../../constants/navigationStrings';
 import {connect} from 'react-redux';
 import imagePath from '../../constants/imagePath';
 import colors from '../../styles/colors';
-import {formatStringToDate} from '../../utils/helperFunctions';
+import styles from './styles';
+import strings from '../../constants/lang';
+import ListItem from '../../Components/ListItem';
 
 class CreditTab extends Component {
   add = () => {
     // console.warn('inside credit tab');
     this.props.navigation.navigate(navigationStrings.AddDetails, {
-      type: 'Credit',
+      type: strings.CREDIT,
     });
   };
 
@@ -19,7 +21,7 @@ class CreditTab extends Component {
     let result = 0;
     if (this.props.list.length > 0) {
       this.props.list.forEach(singleEntry => {
-        if (singleEntry.category === 'Credit')
+        if (singleEntry.category === strings.CREDIT)
           result += Number(singleEntry.amount);
       });
     }
@@ -27,47 +29,24 @@ class CreditTab extends Component {
   };
 
   _renderItem = ({item, index}) =>
-    item.category === 'Credit' && (
-      <View
-        style={{
-          paddingVertical: 8,
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderBottomColor: '#c5c5c5',
-          borderBottomWidth: 1,
-        }}>
-        <Image
-          source={imagePath.ic_dollar}
-          style={{width: 30, height: 30, flex: 0.1, resizeMode: 'contain'}}
-        />
-        <Text style={{flex: 0.6, marginLeft: 16}}>{item.description}</Text>
-        <Text style={{color: colors.themeGray, flex: 0.4}}>
-          {formatStringToDate(item.date)}
-        </Text>
-        <Text style={{flex: 0.2}}>+{item.amount}</Text>
-      </View>
+    item.category === strings.CREDIT && (
+      <ListItem item={item} navigation={this.props.navigation} />
     );
 
   render() {
     // console.log(this.props.list);
     console.log();
     return (
-      <View style={{flex: 1, backgroundColor: colors.themeWhite}}>
+      <View style={{flex: 1, backgroundColor: colors.white}}>
         <View style={styles.headingContainerStyle}>
           <Text style={{textAlign: 'center', fontSize: 18}}>
-            Total Credit : {this.getTotal()}
+            {strings.TOTAL_CREDIT} : {this.getTotal()}
           </Text>
         </View>
         <FlatList
           data={this.props.list}
           renderItem={this._renderItem}
-          style={{
-            backgroundColor: colors.themeWhite,
-            elevation: 5,
-            paddingHorizontal: 16,
-            marginHorizontal: 16,
-            marginBottom: 16,
-          }}
+          style={styles.flatListStyle}
         />
         <FloatingButton add={this.add} />
       </View>
@@ -82,15 +61,3 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps)(CreditTab);
-
-const styles = StyleSheet.create({
-  headingContainerStyle: {
-    elevation: 5,
-    backgroundColor: '#fff',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    alignSelf: 'center',
-    borderRadius: 4,
-    marginVertical: 32,
-  },
-});

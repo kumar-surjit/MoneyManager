@@ -9,3 +9,8 @@ export function formatStringToDate(date) {
   console.log(tempDate);
   return getDate(tempDate);
 }
+
+export function regexTest(data, pattern) {
+  let regex = new RegExp(pattern);
+  return regex.test(data);
+}
