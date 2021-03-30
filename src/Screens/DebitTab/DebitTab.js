@@ -6,7 +6,6 @@ import {
   View,
   Image,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   Alert,
 } from 'react-native';
 import FloatingButton from '../../Components/FloatingButton';
@@ -14,12 +13,12 @@ import navigationStrings from '../../constants/navigationStrings';
 import {connect, connectAdvanced} from 'react-redux';
 import imagePath from '../../constants/imagePath';
 import colors from '../../styles/colors';
-import {formatStringToDate} from '../../utils/helperFunctions';
 import styles from './styles';
 import actions from '../../redux/actions';
 import strings from '../../constants/lang';
 import {showMessage} from 'react-native-flash-message';
 import ListItem from '../../Components/ListItem';
+import commonStyles from '../../styles/commonStyles';
 
 class DebitTab extends Component {
   add = () => {
@@ -41,7 +40,7 @@ class DebitTab extends Component {
   };
 
   setSelected = (item, newValue) => {
-    console.log('LONG PRESS CLICKED');
+    // console.log('LONG PRESS CLICKED');
     item.isSelected = newValue;
     actions.updateItem(item);
   };
@@ -73,43 +72,13 @@ class DebitTab extends Component {
     ]);
   };
 
+  onFilterPressed = () => {
+    actions.filterEnteries();
+  };
+
   _renderItem = ({item, index}) =>
     item.category === strings.DEBIT && (
       <ListItem item={item} navigation={this.props.navigation} />
-      // <TouchableOpacity
-      //   style={styles.itemContainer}
-      //   onLongPress={() => this.setSelected(item, true)}
-      //   delayLongPress={500}
-      //   onPress={() => this.setSelected(item, false)}>
-      //   <Image source={imagePath.ic_dollar} style={styles.itemImageStyle} />
-      //   <Text style={{flex: 0.6, marginLeft: 16}}>{item.description}</Text>
-      //   <Text style={{color: colors.themeGray, flex: 0.4}}>
-      //     {formatStringToDate(item.date)}
-      //   </Text>
-      //   <Text style={{flex: 0.2}}>-{item.amount}</Text>
-      //   {item.isSelected && (
-      //     <View style={styles.iconsContainer}>
-      //       <TouchableOpacity
-      //         hitSlop={{top: 8, bottom: 8, left: 8, right: 0}}
-      //         onPress={() => this.onEditPressed(item)}>
-      //         <Image
-      //           source={imagePath.ic_edit}
-      //           style={styles.singleIconStyle}
-      //           tintColor={colors.iconEditColor}
-      //         />
-      //       </TouchableOpacity>
-      //       <TouchableOpacity
-      //         hitSlop={{top: 8, bottom: 8, left: 0, right: 8}}
-      //         onPress={() => this.onDeletePressed(item.id)}>
-      //         <Image
-      //           source={imagePath.ic_delete}
-      //           style={styles.singleIconStyle}
-      //           tintColor={colors.iconDeleteColor}
-      //         />
-      //       </TouchableOpacity>
-      //     </View>
-      //   )}
-      // </TouchableOpacity>
     );
 
   render() {
@@ -127,7 +96,20 @@ class DebitTab extends Component {
           renderItem={this._renderItem}
           style={styles.flatListStyle}
         />
-        <FloatingButton add={this.add} />
+        <FloatingButton
+          onPress={this.add}
+          iconName="plus"
+          size={35}
+          containerStyle={commonStyles.addButtonContainer}
+        />
+        {this.props.list.length > 1 && (
+          <FloatingButton
+            iconName="filter"
+            size={30}
+            containerStyle={commonStyles.filterButtonContainer}
+            onPress={this.onFilterPressed}
+          />
+        )}
       </View>
     );
   }

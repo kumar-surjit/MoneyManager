@@ -27,3 +27,10 @@ export function deleteItem(id) {
     payload: {id},
   });
 }
+
+export function filterEnteries(limit) {
+  dispatch({
+    type: types.FILTER_ITEMS,
+    payload: {limit},
+  });
+}

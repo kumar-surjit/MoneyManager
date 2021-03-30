@@ -14,3 +14,12 @@ export function regexTest(data, pattern) {
   let regex = new RegExp(pattern);
   return regex.test(data);
 }
+
+export function getDaysFromNow(date) {
+  let taskDate = new Date(date);
+  let now = new Date();
+  // console.log(now);
+  //time difference in milliseconds
+  let timeDiff = now.getTime() - taskDate.getTime();
+  return Math.round(timeDiff / (1000 * 60 * 60 * 24));
+}

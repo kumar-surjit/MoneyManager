@@ -1,7 +1,9 @@
 import actionTypes from '../actionTypes';
+import {getDaysFromNow} from '../../utils/helperFunctions';
 
 const initialState = {
   list: [],
+  backUpList: [],
 };
 
 let id = 0;
@@ -16,6 +18,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         list: [...state.list, data],
+        backUpList: [...state.list, data],
       };
     }
     case actionTypes.UPDATE_ITEM: {
@@ -31,6 +34,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         list: updatedList,
+        backUpList: updatedList,
       };
     }
     case actionTypes.DELETE_ITEM: {
@@ -41,6 +45,19 @@ export default function (state = initialState, action) {
       return {
         ...state,
         list: updatedList,
+        backUpList: updatedList,
+      };
+    }
+    case actionTypes.FILTER_ITEMS: {
+      const {limit} = action.payload;
+      const filteredList = state.backUpList.filter(item => {
+        if (getDaysFromNow(item.date) <= limit) return item;
+      });
+      // console.log(filteredList);
+      console.log(state.list);
+      return {
+        ...state,
+        list: filteredList,
       };
     }
     default:

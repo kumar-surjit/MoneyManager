@@ -22,7 +22,5 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     elevation: 5,
     paddingHorizontal: 16,
-    marginHorizontal: 16,
-    marginBottom: 16,
   },
 });

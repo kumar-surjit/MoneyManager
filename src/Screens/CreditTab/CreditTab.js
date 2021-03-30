@@ -8,6 +8,8 @@ import colors from '../../styles/colors';
 import styles from './styles';
 import strings from '../../constants/lang';
 import ListItem from '../../Components/ListItem';
+import commonStyles from '../../styles/commonStyles';
+import actions from '../../redux/actions';
 
 class CreditTab extends Component {
   add = () => {
@@ -28,16 +30,20 @@ class CreditTab extends Component {
     return result;
   };
 
+  onFilterPressed = () => {
+    actions.filterEnteries();
+  };
+
   _renderItem = ({item, index}) =>
     item.category === strings.CREDIT && (
       <ListItem item={item} navigation={this.props.navigation} />
     );
 
   render() {
-    // console.log(this.props.list);
+    console.log(this.props.list);
     console.log();
     return (
-      <View style={{flex: 1, backgroundColor: colors.white}}>
+      <View style={{flex: 1}}>
         <View style={styles.headingContainerStyle}>
           <Text style={{textAlign: 'center', fontSize: 18}}>
             {strings.TOTAL_CREDIT} : {this.getTotal()}
@@ -48,7 +54,20 @@ class CreditTab extends Component {
           renderItem={this._renderItem}
           style={styles.flatListStyle}
         />
-        <FloatingButton add={this.add} />
+        <FloatingButton
+          onPress={this.add}
+          iconName="plus"
+          size={35}
+          containerStyle={commonStyles.addButtonContainer}
+        />
+        {this.props.list.length > 1 && (
+          <FloatingButton
+            iconName="filter"
+            size={30}
+            containerStyle={commonStyles.filterButtonContainer}
+            onPress={this.onFilterPressed}
+          />
+        )}
       </View>
     );
   }

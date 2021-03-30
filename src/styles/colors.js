@@ -7,4 +7,5 @@ export default {
   iconDeleteColor: '#f72305',
   themeLighGray: '#c5c5c5',
   dropdownWhite: '#fafafa',
+  themeOrange: '#FF652F',
 };
